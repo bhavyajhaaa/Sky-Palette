@@ -2,6 +2,7 @@
 
 import { sortColors } from "@/lib/images";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SiteAttribution } from "./SiteAttribution";
 
 type ArtSettings = {
   flow: number;
@@ -1031,25 +1032,28 @@ export function FluidColorField({ colors }: { colors: string[] }) {
           </div>
         </aside>
       )}
-      <div className="theme-ui pointer-events-none absolute bottom-4 left-5 bg-[var(--bg)]/70 px-2 py-1 text-[10px] text-[var(--ink)] backdrop-blur-sm">
+      <div className="theme-ui pointer-events-none absolute bottom-4 left-5 z-20 bg-[var(--bg)]/70 px-2 py-1 text-[10px] text-[var(--ink)] backdrop-blur-sm max-sm:bottom-20">
         {reduced ? "Static field · reduced motion" : "Move through the color"}
       </div>
-      <div className="theme-ui absolute bottom-4 right-5 flex gap-4 bg-[var(--bg)]/75 px-3 py-2 text-[11px] text-[var(--ink)] backdrop-blur-sm">
-        <button
-          className="muted hover:text-[var(--ink)]"
-          onClick={() => {
-            resetRequested.current = true;
-            wakeRenderer.current();
-          }}
-        >
-          Reset
-        </button>
-        <button
-          className="hover:text-[var(--ink)]"
-          onClick={() => setPanel((x) => !x)}
-        >
-          Settings
-        </button>
+      <SiteAttribution className="theme-ui absolute bottom-4 left-1/2 z-30 -translate-x-1/2 text-center drop-shadow-sm max-sm:left-5 max-sm:translate-x-0" />
+      <div className="theme-ui absolute bottom-4 right-5 z-30 flex gap-4 bg-[var(--bg)]/75 px-3 py-2 text-[11px] text-[var(--ink)] backdrop-blur-sm max-sm:bottom-14">
+        <span className="flex gap-4">
+          <button
+            className="muted hover:text-[var(--ink)]"
+            onClick={() => {
+              resetRequested.current = true;
+              wakeRenderer.current();
+            }}
+          >
+            Reset
+          </button>
+          <button
+            className="hover:text-[var(--ink)]"
+            onClick={() => setPanel((x) => !x)}
+          >
+            Settings
+          </button>
+        </span>
       </div>
     </div>
   );

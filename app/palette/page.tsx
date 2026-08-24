@@ -1,8 +1,8 @@
 import { PaletteGrid } from "@/components/PaletteGrid";
-import { getSkies } from "@/lib/data";
+import { getPaletteSkies } from "@/lib/data";
 
 export default async function Palette() {
-  const skies = await getSkies();
+  const skies = await getPaletteSkies();
   return (
     <PaletteGrid
       colors={skies.flatMap((sky) => sky.colors)}

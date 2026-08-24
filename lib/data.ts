@@ -1,6 +1,12 @@
-import type { Sky } from "@/types/sky";
+import type { Sky, SkyColorSource } from "@/types/sky";
 import { createClient } from "@supabase/supabase-js";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_cache } from "next/cache";
+
+export const SKY_CACHE_TAGS = {
+  archive: "skies:archive",
+  palette: "skies:palette",
+  details: "skies:details",
+} as const;
 
 export const seedSkies: Sky[] = [
   {
@@ -9,6 +15,7 @@ export const seedSkies: Sky[] = [
     width: 1536,
     height: 1024,
     created_at: "2026-08-23T18:34:00Z",
+    hidden_from_palette: false,
     colors: [
       "#283B59",
       "#465675",
@@ -30,6 +37,7 @@ export const seedSkies: Sky[] = [
     width: 1024,
     height: 1280,
     created_at: "2026-08-19T12:20:00Z",
+    hidden_from_palette: false,
     colors: [
       "#253A5F",
       "#495A7C",
@@ -51,6 +59,7 @@ export const seedSkies: Sky[] = [
     width: 1200,
     height: 900,
     created_at: "2026-08-12T04:42:00Z",
+    hidden_from_palette: false,
     colors: [
       "#334865",
       "#5A6680",
@@ -72,6 +81,7 @@ export const seedSkies: Sky[] = [
     width: 900,
     height: 1200,
     created_at: "2026-08-03T14:12:00Z",
+    hidden_from_palette: false,
     colors: [
       "#293D5B",
       "#4C5B78",
@@ -93,6 +103,7 @@ export const seedSkies: Sky[] = [
     width: 1400,
     height: 930,
     created_at: "2026-07-26T13:55:00Z",
+    hidden_from_palette: false,
     colors: [
       "#32425F",
       "#53627C",
@@ -109,21 +120,66 @@ export const seedSkies: Sky[] = [
     ],
   },
 ];
-export async function getSkies(): Promise<Sky[]> {
-  noStore();
+function publicDatabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
     key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return seedSkies;
-  const db = createClient(url, key, { auth: { persistSession: false } }),
-    { data, error } = await db
+  return url && key
+    ? createClient(url, key, { auth: { persistSession: false } })
+    : null;
+}
+
+function withPublicImage(db: NonNullable<ReturnType<typeof publicDatabase>>, sky: Sky) {
+  return {
+    ...sky,
+    image_path: sky.image_path.startsWith("http")
+      ? sky.image_path
+      : db.storage.from("sky-images").getPublicUrl(sky.image_path).data.publicUrl,
+  };
+}
+
+const getCachedSkies = unstable_cache(
+  async (): Promise<Sky[]> => {
+    const db = publicDatabase();
+    if (!db) return seedSkies;
+    const { data, error } = await db
       .from("skies")
-      .select("id,image_path,width,height,colors,created_at")
+      .select(
+        "id,image_path,width,height,colors,created_at,hidden_from_palette",
+      )
       .order("created_at", { ascending: false });
-  if (error || !data?.length) return seedSkies;
-  return data.map((s) => ({
-    ...s,
-    image_path: s.image_path.startsWith("http")
-      ? s.image_path
-      : db.storage.from("sky-images").getPublicUrl(s.image_path).data.publicUrl,
-  })) as Sky[];
+    if (error) return seedSkies;
+    return (data as Sky[]).map((sky) => withPublicImage(db, sky));
+  },
+  ["skies-archive-v1"],
+  { tags: [SKY_CACHE_TAGS.archive, SKY_CACHE_TAGS.details] },
+);
+
+const getCachedPaletteSkies = unstable_cache(
+  async (): Promise<SkyColorSource[]> => {
+    const db = publicDatabase();
+    if (!db)
+      return seedSkies.map(({ id, colors }) => ({ id, colors }));
+    const { data, error } = await db
+      .from("skies")
+      .select("id,colors")
+      .eq("hidden_from_palette", false)
+      .order("created_at", { ascending: false });
+    if (error)
+      return seedSkies.map(({ id, colors }) => ({ id, colors }));
+    return data as SkyColorSource[];
+  },
+  ["skies-palette-v1"],
+  { tags: [SKY_CACHE_TAGS.palette] },
+);
+
+export function getSkies() {
+  return getCachedSkies();
+}
+
+export function getPaletteSkies() {
+  return getCachedPaletteSkies();
+}
+
+export async function getSky(id: string) {
+  return (await getCachedSkies()).find((sky) => sky.id === id) ?? null;
 }

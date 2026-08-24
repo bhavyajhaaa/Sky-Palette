@@ -5,4 +5,7 @@ export type Sky = {
   height: number;
   colors: string[];
   created_at: string;
+  hidden_from_palette: boolean;
 };
+
+export type SkyColorSource = Pick<Sky, "id" | "colors">;

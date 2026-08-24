@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Sky } from "@/types/sky";
+import { SiteAttribution } from "./SiteAttribution";
 
 export function ArchiveGrid({ skies }: { skies: Sky[] }) {
   return (
@@ -44,6 +45,7 @@ export function ArchiveGrid({ skies }: { skies: Sky[] }) {
           </Link>
         ))}
       </div>
+      <SiteAttribution className="mt-20 text-center md:mt-28" />
     </main>
   );
 }

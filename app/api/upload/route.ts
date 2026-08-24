@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { serverSupabase } from "@/lib/supabase";
+import { hasAdminPassword } from "@/lib/admin";
+import { SKY_CACHE_TAGS } from "@/lib/data";
 import { randomUUID } from "crypto";
+import { revalidateTag } from "next/cache";
 
 const MAX_IMAGE_BYTES = 1_000_000;
 const MAX_IMAGE_EDGE = 600;
@@ -79,10 +82,7 @@ export async function POST(req: Request) {
           typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color),
       ),
   };
-  if (
-    !process.env.SKY_UPLOAD_PASSWORD ||
-    form.get("password") !== process.env.SKY_UPLOAD_PASSWORD
-  )
+  if (!hasAdminPassword(form.get("password")))
     return invalid(
       "INVALID_PASSWORD",
       "Incorrect upload password.",
@@ -153,5 +153,7 @@ export async function POST(req: Request) {
     await supabase.storage.from("sky-images").remove([path]);
     return NextResponse.json({ error: row.error.message }, { status: 500 });
   }
+  revalidateTag(SKY_CACHE_TAGS.archive);
+  revalidateTag(SKY_CACHE_TAGS.palette);
   return NextResponse.json({ sky: row.data });
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSkies } from "@/lib/data";
+import { getSky } from "@/lib/data";
 import { CopyColor } from "@/components/CopyColor";
+import { SkyManagement } from "@/components/SkyManagement";
 
 export default async function SkyPage({
   params,
@@ -9,7 +10,7 @@ export default async function SkyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params,
-    s = (await getSkies()).find((x) => x.id === id);
+    s = await getSky(id);
   if (!s) notFound();
   return (
     <main className="px-6 md:px-[10vw] py-10 md:py-16">
@@ -40,6 +41,7 @@ export default async function SkyPage({
             </div>
           ))}
         </div>
+        <SkyManagement id={s.id} initiallyHidden={s.hidden_from_palette} />
       </div>
     </main>
   );

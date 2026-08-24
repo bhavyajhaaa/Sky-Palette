@@ -1,6 +1,7 @@
 "use client";
 import { sortColors } from "@/lib/images";
 import { useEffect, useState } from "react";
+import { SiteAttribution } from "./SiteAttribution";
 
 export function PaletteGrid({
   colors,
@@ -50,6 +51,7 @@ export function PaletteGrid({
       <div className="theme-ui absolute bottom-3 left-4 z-10 bg-[var(--bg)]/75 px-2 py-1 text-[10px] backdrop-blur-sm">
         {colors.length} colors from {skies} skies
       </div>
+      <SiteAttribution className="theme-ui absolute bottom-3 right-4 z-20 max-w-[55vw] text-right drop-shadow-sm max-sm:bottom-9" />
     </main>
   );
 }
