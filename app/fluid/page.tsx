@@ -1,2 +1,3 @@
-import {FluidColorField} from '@/components/FluidColorField';import {getSkies} from '@/lib/data';
-export default async function Fluid(){const all=(await getSkies()).flatMap(s=>s.colors);return <FluidColorField colors={all}/>}
+import { FluidPage } from '@/components/FluidPage';
+
+export default function Fluid(){return <FluidPage/>}

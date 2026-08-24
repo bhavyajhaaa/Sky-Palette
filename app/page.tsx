@@ -1,1 +1,3 @@
-import {PaletteGrid} from '@/components/PaletteGrid';import {getSkies} from '@/lib/data';export default async function Page(){const skies=await getSkies();return <PaletteGrid colors={skies.flatMap(s=>s.colors)} skies={skies.length}/>}
+import { FluidPage } from '@/components/FluidPage';
+
+export default function Page(){return <FluidPage/>}
