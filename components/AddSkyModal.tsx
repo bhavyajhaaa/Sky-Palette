@@ -80,6 +80,23 @@ function AddSkyModal({ close }: { close: () => void }) {
     form.set("width", String(image.width));
     form.set("height", String(image.height));
     form.set("colors", JSON.stringify(image.colors));
+    console.info("UPLOAD_CLIENT_PAYLOAD", {
+      size: image.blob.size,
+      type: image.blob.type,
+      width: image.width,
+      height: image.height,
+      colors: image.colors,
+    });
+    const submittedImage = form.get("image");
+    console.info("UPLOAD_FORMDATA_IMAGE", {
+      sourceIsPreviewBlob: true,
+      size: submittedImage instanceof File ? submittedImage.size : null,
+      type: submittedImage instanceof File ? submittedImage.type : null,
+      sameSize:
+        submittedImage instanceof File && submittedImage.size === image.blob.size,
+      sameType:
+        submittedImage instanceof File && submittedImage.type === image.blob.type,
+    });
     const r = await fetch("/api/upload", { method: "POST", body: form });
     const body = await r.json();
     setBusy(false);
