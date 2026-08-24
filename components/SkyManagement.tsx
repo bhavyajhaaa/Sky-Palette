@@ -95,7 +95,7 @@ export function SkyManagement({
           {hidden ? "Restore to palette" : "Hide from palette"}
         </button>
         <button
-          className="text-[var(--muted)] hover:text-[var(--ink)] hover:underline"
+          className="text-[var(--muted-foreground)] hover:text-[var(--ink)] hover:underline"
           onClick={(event) => open("delete", event)}
         >
           Delete

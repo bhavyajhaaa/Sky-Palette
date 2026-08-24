@@ -1,4 +1,4 @@
-# Sky Colors
+# Sky Palette
 
 A small digital museum for sky photographs and their extracted colors. Built with Next.js, TypeScript, Tailwind, browser Canvas, and optional Supabase persistence.
 

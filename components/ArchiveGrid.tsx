@@ -45,7 +45,7 @@ export function ArchiveGrid({ skies }: { skies: Sky[] }) {
           </Link>
         ))}
       </div>
-      <SiteAttribution className="mt-20 text-center md:mt-28" />
+      <SiteAttribution className="mt-20 md:mt-28" />
     </main>
   );
 }

@@ -855,6 +855,7 @@ export function FluidColorField({ colors }: { colors: string[] }) {
       />
       {panel && (
         <aside
+          id="fluid-settings-panel"
           aria-label="Fluid settings"
           className="absolute right-4 top-4 z-20 max-h-[calc(100%-4.5rem)] w-[310px] overflow-auto border line bg-[var(--bg)] text-[var(--ink)] shadow-[0_10px_35px_rgba(20,20,20,.08)] backdrop-blur-md dark:bg-[#161718] max-sm:fixed max-sm:inset-x-3 max-sm:bottom-3 max-sm:top-auto max-sm:max-h-[72vh] max-sm:w-auto"
         >
@@ -873,7 +874,7 @@ export function FluidColorField({ colors }: { colors: string[] }) {
               <button
                 key={name}
                 onClick={() => choose(name)}
-                className={`site-mark border-b px-1 py-2 text-[9px] tracking-[.1em] transition-colors ${preset === name ? "border-[var(--ink)] text-[var(--ink)]" : "border-transparent text-[var(--muted)] hover:text-[var(--ink)]"}`}
+                className={`site-mark border-b px-1 py-2 text-[9px] tracking-[.1em] transition-colors ${preset === name ? "border-[var(--ink)] text-[var(--ink)]" : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--ink)]"}`}
               >
                 {name[0] + name.slice(1).toLowerCase()}
               </button>
@@ -1032,28 +1033,54 @@ export function FluidColorField({ colors }: { colors: string[] }) {
           </div>
         </aside>
       )}
-      <div className="theme-ui pointer-events-none absolute bottom-4 left-5 z-20 bg-[var(--bg)]/70 px-2 py-1 text-[10px] text-[var(--ink)] backdrop-blur-sm max-sm:bottom-20">
-        {reduced ? "Static field · reduced motion" : "Move through the color"}
-      </div>
-      <SiteAttribution className="theme-ui absolute bottom-4 left-1/2 z-30 -translate-x-1/2 text-center drop-shadow-sm max-sm:left-5 max-sm:translate-x-0" />
-      <div className="theme-ui absolute bottom-4 right-5 z-30 flex gap-4 bg-[var(--bg)]/75 px-3 py-2 text-[11px] text-[var(--ink)] backdrop-blur-sm max-sm:bottom-14">
-        <span className="flex gap-4">
-          <button
-            className="muted hover:text-[var(--ink)]"
-            onClick={() => {
-              resetRequested.current = true;
-              wakeRenderer.current();
-            }}
+      <SiteAttribution className="theme-ui absolute bottom-4 left-5 z-30 max-w-[calc(100vw-7.5rem)] drop-shadow-sm" />
+      <div className="theme-ui absolute bottom-3 right-4 z-30 flex items-center gap-1 text-[var(--ink)]">
+        <button
+          className="muted grid size-8 place-items-center bg-transparent hover:text-[var(--ink)]"
+          aria-label="Reset fluid"
+          title="Reset"
+          onClick={() => {
+            resetRequested.current = true;
+            wakeRenderer.current();
+          }}
+        >
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            Reset
-          </button>
-          <button
-            className="hover:text-[var(--ink)]"
-            onClick={() => setPanel((x) => !x)}
+            <path d="M13.25 5.75A5.75 5.75 0 1 0 13.1 10.6" />
+            <path d="M13.25 2.75v3h-3" />
+          </svg>
+        </button>
+        <button
+          className="muted grid size-8 place-items-center bg-transparent hover:text-[var(--ink)]"
+          aria-label="Fluid settings"
+          aria-controls="fluid-settings-panel"
+          aria-expanded={panel}
+          title="Settings"
+          onClick={() => setPanel((x) => !x)}
+        >
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
           >
-            Settings
-          </button>
-        </span>
+            <path d="M2 4h4M9 4h5M2 8h8M13 8h1M2 12h2M7 12h7" />
+            <path d="M6 2.5v3M10 6.5v3M4 10.5v3" />
+          </svg>
+        </button>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@
 :root {
   --bg: #f7f6f2;
   --ink: #151515;
-  --muted: #77746e;
+  --muted-foreground: #66635e;
   --line: #dedbd3;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --editorial:
@@ -13,7 +13,7 @@
 .dark {
   --bg: #0c0d0e;
   --ink: #f1f0eb;
-  --muted: #92918c;
+  --muted-foreground: #aaa8a1;
   --line: #292a2b;
 }
 * {
@@ -40,7 +40,7 @@ a:focus-visible {
   outline-offset: 4px;
 }
 .muted {
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .line {
   border-color: var(--line);
@@ -66,12 +66,12 @@ select,
   border-radius: 0;
   background: transparent;
   padding: 0 9px;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 10px;
   letter-spacing: 0.025em;
 }
 .add-sky:hover {
-  border-color: var(--muted);
+  border-color: var(--muted-foreground);
   background: color-mix(in srgb, var(--ink) 4%, transparent);
   color: var(--ink);
 }
@@ -135,11 +135,11 @@ select,
 }
 .fluid-range:hover::-webkit-slider-runnable-track,
 .fluid-range:focus-visible::-webkit-slider-runnable-track {
-  background: var(--muted);
+  background: var(--muted-foreground);
 }
 .fluid-range:hover::-moz-range-track,
 .fluid-range:focus-visible::-moz-range-track {
-  background: var(--muted);
+  background: var(--muted-foreground);
 }
 .fluid-range:focus-visible {
   outline: 1px solid var(--ink);

@@ -20,14 +20,14 @@ export function Header() {
     localStorage.setItem("sky-theme", value ? "dark" : "light");
   };
   return (
-    <header className="h-16 px-5 md:px-8 flex items-center justify-between border-b line relative z-20 bg-[var(--bg)]">
+    <header className="h-16 px-4 md:px-8 flex items-center justify-between border-b line relative z-20 bg-[var(--bg)]">
       <Link
         href="/"
-        className="site-mark text-[13px] font-semibold tracking-[.14em]"
+        className="site-mark text-[11px] font-semibold tracking-[.1em] sm:text-[13px] sm:tracking-[.14em]"
       >
-        SKY COLORS
+        SKY PALETTE
       </Link>
-      <nav className="flex items-center gap-4 md:gap-7 text-xs">
+      <nav className="flex items-center gap-2 text-[11px] sm:gap-4 sm:text-xs md:gap-7">
         <Link className={fluid ? "" : "muted"} href="/">
           Fluid
         </Link>
