@@ -52,6 +52,16 @@ a:focus-visible {
 .fluid-attribution a:focus-visible {
   color: #fff;
 }
+.fluid-utility-controls {
+  color: var(--artwork-utility-foreground);
+}
+.fluid-utility-controls button {
+  color: inherit;
+}
+.fluid-utility-controls button:hover,
+.fluid-utility-controls button:focus-visible {
+  color: #fff;
+}
 @media (min-width: 640px) {
   .fluid-attribution {
     font-size: 12px;
