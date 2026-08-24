@@ -5,6 +5,7 @@
   --bg: #f7f6f2;
   --ink: #151515;
   --muted-foreground: #66635e;
+  --artwork-utility-foreground: #f5f3ee;
   --line: #dedbd3;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --editorial:
@@ -14,6 +15,7 @@
   --bg: #0c0d0e;
   --ink: #f1f0eb;
   --muted-foreground: #aaa8a1;
+  --artwork-utility-foreground: #d8d6d0;
   --line: #292a2b;
 }
 * {
@@ -41,6 +43,19 @@ a:focus-visible {
 }
 .muted {
   color: var(--muted-foreground);
+}
+.fluid-attribution {
+  color: var(--artwork-utility-foreground);
+  font-size: 11px;
+}
+.fluid-attribution a:hover,
+.fluid-attribution a:focus-visible {
+  color: #fff;
+}
+@media (min-width: 640px) {
+  .fluid-attribution {
+    font-size: 12px;
+  }
 }
 .line {
   border-color: var(--line);

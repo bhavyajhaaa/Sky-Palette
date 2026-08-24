@@ -1033,7 +1033,7 @@ export function FluidColorField({ colors }: { colors: string[] }) {
           </div>
         </aside>
       )}
-      <SiteAttribution className="theme-ui absolute bottom-4 left-5 z-30 max-w-[calc(100vw-7.5rem)] drop-shadow-sm" />
+      <SiteAttribution className="fluid-attribution theme-ui absolute bottom-4 left-5 z-30 max-w-[calc(100vw-7.5rem)] drop-shadow-sm" />
       <div className="theme-ui absolute bottom-3 right-4 z-30 flex items-center gap-1 text-[var(--ink)]">
         <button
           className="muted grid size-8 place-items-center bg-transparent hover:text-[var(--ink)]"
