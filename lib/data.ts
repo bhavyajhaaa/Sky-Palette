@@ -1,21 +1,129 @@
-import type { Sky } from '@/types/sky';
-import { createClient } from '@supabase/supabase-js';
-import { unstable_noStore as noStore } from 'next/cache';
+import type { Sky } from "@/types/sky";
+import { createClient } from "@supabase/supabase-js";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const seedSkies: Sky[] = [
- {id:'afterglow',image_path:'/seed-sky.png',width:1536,height:1024,created_at:'2026-08-23T18:34:00Z',colors:['#283B59','#465675','#686F8B','#8F8496','#AF8492','#C57C79','#D98472','#EE9773','#FAA56E','#E2A487','#B38A80','#765C69']},
- {id:'violet-hour',image_path:'/seed-sky.png',width:1024,height:1280,created_at:'2026-08-19T12:20:00Z',colors:['#253A5F','#495A7C','#697597','#8D8EA9','#AC91A8','#C291A5','#D79AA0','#E7A38F','#F0B188','#D5A09A','#A87580','#664D65']},
- {id:'apricot-east',image_path:'/seed-sky.png',width:1200,height:900,created_at:'2026-08-12T04:42:00Z',colors:['#334865','#5A6680','#7E8095','#A198A5','#C3A1A4','#DFA6A0','#F1AA8E','#FDB274','#E7906D','#BF6E68','#8A5965','#554C61']},
- {id:'rose-weather',image_path:'/seed-sky.png',width:900,height:1200,created_at:'2026-08-03T14:12:00Z',colors:['#293D5B','#4C5B78','#70778D','#928A9B','#B48E9B','#D08C8D','#EB927E','#F7A07A','#E8B095','#B98E8B','#886977','#5C5268']},
- {id:'low-sun',image_path:'/seed-sky.png',width:1400,height:930,created_at:'2026-07-26T13:55:00Z',colors:['#32425F','#53627C','#737D94','#9B91A0','#B9919A','#D99388','#EE9A77','#F5A76D','#E3AA8E','#B6837F','#805D6D','#4C485F']},
+  {
+    id: "afterglow",
+    image_path: "/seed-sky.png",
+    width: 1536,
+    height: 1024,
+    created_at: "2026-08-23T18:34:00Z",
+    colors: [
+      "#283B59",
+      "#465675",
+      "#686F8B",
+      "#8F8496",
+      "#AF8492",
+      "#C57C79",
+      "#D98472",
+      "#EE9773",
+      "#FAA56E",
+      "#E2A487",
+      "#B38A80",
+      "#765C69",
+    ],
+  },
+  {
+    id: "violet-hour",
+    image_path: "/seed-sky.png",
+    width: 1024,
+    height: 1280,
+    created_at: "2026-08-19T12:20:00Z",
+    colors: [
+      "#253A5F",
+      "#495A7C",
+      "#697597",
+      "#8D8EA9",
+      "#AC91A8",
+      "#C291A5",
+      "#D79AA0",
+      "#E7A38F",
+      "#F0B188",
+      "#D5A09A",
+      "#A87580",
+      "#664D65",
+    ],
+  },
+  {
+    id: "apricot-east",
+    image_path: "/seed-sky.png",
+    width: 1200,
+    height: 900,
+    created_at: "2026-08-12T04:42:00Z",
+    colors: [
+      "#334865",
+      "#5A6680",
+      "#7E8095",
+      "#A198A5",
+      "#C3A1A4",
+      "#DFA6A0",
+      "#F1AA8E",
+      "#FDB274",
+      "#E7906D",
+      "#BF6E68",
+      "#8A5965",
+      "#554C61",
+    ],
+  },
+  {
+    id: "rose-weather",
+    image_path: "/seed-sky.png",
+    width: 900,
+    height: 1200,
+    created_at: "2026-08-03T14:12:00Z",
+    colors: [
+      "#293D5B",
+      "#4C5B78",
+      "#70778D",
+      "#928A9B",
+      "#B48E9B",
+      "#D08C8D",
+      "#EB927E",
+      "#F7A07A",
+      "#E8B095",
+      "#B98E8B",
+      "#886977",
+      "#5C5268",
+    ],
+  },
+  {
+    id: "low-sun",
+    image_path: "/seed-sky.png",
+    width: 1400,
+    height: 930,
+    created_at: "2026-07-26T13:55:00Z",
+    colors: [
+      "#32425F",
+      "#53627C",
+      "#737D94",
+      "#9B91A0",
+      "#B9919A",
+      "#D99388",
+      "#EE9A77",
+      "#F5A76D",
+      "#E3AA8E",
+      "#B6837F",
+      "#805D6D",
+      "#4C485F",
+    ],
+  },
 ];
-export const allColors = seedSkies.flatMap(s=>s.colors);
-
-export async function getSkies():Promise<Sky[]>{
- noStore();
- const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
- if(!url||!key)return seedSkies;
- const db=createClient(url,key,{auth:{persistSession:false}}),{data,error}=await db.from('skies').select('id,image_path,width,height,colors,created_at').order('created_at',{ascending:false});
- if(error||!data?.length)return seedSkies;
- return data.map(s=>({...s,image_path:s.image_path.startsWith('http')?s.image_path:db.storage.from('sky-images').getPublicUrl(s.image_path).data.publicUrl})) as Sky[];
+export async function getSkies(): Promise<Sky[]> {
+  noStore();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
+    key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return seedSkies;
+  const db = createClient(url, key, { auth: { persistSession: false } }),
+    { data, error } = await db
+      .from("skies")
+      .select("id,image_path,width,height,colors,created_at")
+      .order("created_at", { ascending: false });
+  if (error || !data?.length) return seedSkies;
+  return data.map((s) => ({
+    ...s,
+    image_path: s.image_path.startsWith("http")
+      ? s.image_path
+      : db.storage.from("sky-images").getPublicUrl(s.image_path).data.publicUrl,
+  })) as Sky[];
 }

@@ -1,6 +1,49 @@
-import Link from 'next/link';
-import type {Sky} from '@/types/sky';
+import Link from "next/link";
+import type { Sky } from "@/types/sky";
 
-export function ArchiveGrid({skies}:{skies:Sky[]}){
- return <main className="px-8 md:px-[8vw] py-16 md:py-24"><div className="mb-16 md:mb-24"><p className="text-[11px] uppercase tracking-[.16em] muted">The collection</p><h1 className="mt-3 text-2xl font-normal">An archive of looking up.</h1></div><div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-[7vw] gap-y-24 md:gap-y-32">{skies.map((s,i)=><Link key={s.id} href={`/sky/${s.id}`} className={`group ${i%3===1?'md:mt-14':''}`}><div style={{aspectRatio:`${s.width}/${s.height}`}} className="overflow-hidden"><img src={s.image_path} alt="Uploaded sky photograph" loading={i>4?'lazy':'eager'} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.015]" style={{objectPosition:`${30+(i*13)%45}% ${25+(i*17)%55}%`}}/></div><div className="flex justify-between mt-2 text-[10px] muted opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity"><span>{s.colors.length} colors</span><time>{new Date(s.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</time></div></Link>)}</div></main>;
+export function ArchiveGrid({ skies }: { skies: Sky[] }) {
+  return (
+    <main className="px-8 md:px-[8vw] py-16 md:py-24">
+      <div className="mb-16 md:mb-24">
+        <p className="text-[11px] uppercase tracking-[.16em] muted">
+          The collection
+        </p>
+        <h1 className="mt-3 text-2xl font-normal">An archive of looking up.</h1>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-[7vw] gap-y-24 md:gap-y-32">
+        {skies.map((s, i) => (
+          <Link
+            key={s.id}
+            href={`/sky/${s.id}`}
+            className={`group ${i % 3 === 1 ? "md:mt-14" : ""}`}
+          >
+            <div
+              style={{ aspectRatio: `${s.width}/${s.height}` }}
+              className="overflow-hidden"
+            >
+              <img
+                src={s.image_path}
+                alt="Uploaded sky photograph"
+                loading={i > 4 ? "lazy" : "eager"}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.015]"
+                style={{
+                  objectPosition: `${30 + ((i * 13) % 45)}% ${25 + ((i * 17) % 55)}%`,
+                }}
+              />
+            </div>
+            <div className="flex justify-between mt-2 text-[10px] muted opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity">
+              <span>{s.colors.length} colors</span>
+              <time>
+                {new Date(s.created_at).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </time>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </main>
+  );
 }

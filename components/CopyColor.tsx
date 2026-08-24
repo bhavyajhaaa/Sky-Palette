@@ -1,1 +1,17 @@
-'use client';import {useState} from 'react';export function CopyColor({color}:{color:string}){const [copied,setCopied]=useState(false);return <button onClick={()=>{navigator.clipboard.writeText(color);setCopied(true);setTimeout(()=>setCopied(false),900)}} className="text-[10px] muted mt-2">{copied?'Copied':color}</button>}
+"use client";
+import { useState } from "react";
+export function CopyColor({ color }: { color: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(color);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 900);
+      }}
+      className="text-[10px] muted mt-2"
+    >
+      {copied ? "Copied" : color}
+    </button>
+  );
+}
