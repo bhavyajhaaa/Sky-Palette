@@ -3,5 +3,5 @@ import { FluidColorField } from "./FluidColorField";
 
 export async function FluidPage() {
   const skies = await getPaletteSkies();
-  return <FluidColorField colors={skies.flatMap((sky) => sky.colors)} />;
+  return <FluidColorField skies={skies} />;
 }

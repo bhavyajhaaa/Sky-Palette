@@ -41,7 +41,7 @@ export default async function SkyPage({
             </div>
           ))}
         </div>
-        <SkyManagement id={s.id} initiallyHidden={s.hidden_from_palette} />
+        <SkyManagement id={s.id} />
       </div>
     </main>
   );

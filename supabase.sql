@@ -4,6 +4,7 @@ create table public.skies (
   width integer not null,
   height integer not null,
   colors jsonb not null default '[]'::jsonb,
+  -- Legacy/future global-admin exclusion flag. Visitor curation is localStorage-only.
   hidden_from_palette boolean not null default false,
   created_at timestamptz not null default now()
 );

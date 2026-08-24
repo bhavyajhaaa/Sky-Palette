@@ -2,19 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useHiddenSkies } from "./SkySelectionProvider";
 
-type Action = "visibility" | "delete";
-
-export function SkyManagement({
-  id,
-  initiallyHidden,
-}: {
-  id: string;
-  initiallyHidden: boolean;
-}) {
+export function SkyManagement({ id }: { id: string }) {
   const router = useRouter();
-  const [hidden, setHidden] = useState(initiallyHidden);
-  const [action, setAction] = useState<Action | null>(null);
+  const { show } = useHiddenSkies();
+  const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -23,61 +16,49 @@ export function SkyManagement({
 
   const close = () => {
     if (busy) return;
-    setAction(null);
+    setOpen(false);
     setPassword("");
     setMessage("");
     requestAnimationFrame(() => trigger.current?.focus());
   };
 
-  const open = (next: Action, event: React.MouseEvent<HTMLButtonElement>) => {
+  const openDialog = (event: React.MouseEvent<HTMLButtonElement>) => {
     trigger.current = event.currentTarget;
-    setAction(next);
+    setOpen(true);
     setPassword("");
     setMessage("");
   };
 
   useEffect(() => {
-    if (!action) return;
+    if (!open) return;
     input.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
     addEventListener("keydown", onKeyDown);
     return () => removeEventListener("keydown", onKeyDown);
-  }, [action, busy]);
+  }, [open, busy]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!action || !password) return;
+    if (!password) return;
     setBusy(true);
     setMessage("");
-    const deleting = action === "delete";
     try {
-      const response = await fetch(
-        deleting ? `/api/skies/${id}` : `/api/skies/${id}/visibility`,
-        {
-          method: deleting ? "DELETE" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            deleting ? { password } : { password, hidden: !hidden },
-          ),
-        },
-      );
+      const response = await fetch(`/api/skies/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
       const body = await response.json();
       if (!response.ok) {
         setMessage(body.error || "The change could not be completed.");
         return;
       }
-      if (deleting) {
-        router.push("/archive");
-        router.refresh();
-        return;
-      }
-      setHidden(Boolean(body.hidden));
-      setAction(null);
-      setPassword("");
+      show(id);
+      router.push("/archive");
       router.refresh();
-      requestAnimationFrame(() => trigger.current?.focus());
+      return;
     } catch {
       setMessage("The change could not be completed.");
     } finally {
@@ -89,19 +70,13 @@ export function SkyManagement({
     <>
       <div className="mt-12 flex items-center gap-6 border-t line pt-5 text-[11px]">
         <button
-          className="muted hover:text-[var(--ink)] hover:underline"
-          onClick={(event) => open("visibility", event)}
-        >
-          {hidden ? "Restore to palette" : "Hide from palette"}
-        </button>
-        <button
           className="text-[var(--muted-foreground)] hover:text-[var(--ink)] hover:underline"
-          onClick={(event) => open("delete", event)}
+          onClick={openDialog}
         >
           Delete
         </button>
       </div>
-      {action && (
+      {open && (
         <div
           className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4"
           onMouseDown={(event) => event.target === event.currentTarget && close()}
@@ -113,17 +88,9 @@ export function SkyManagement({
             className="w-full max-w-sm border line bg-[var(--bg)] p-6 text-[var(--ink)]"
           >
             <h2 id="manage-sky-title" className="text-sm">
-              {action === "delete"
-                ? "Delete this sky permanently?"
-                : hidden
-                  ? "Restore this sky to the palette?"
-                  : "Hide this sky from the palette?"}
+              Delete this sky permanently?
             </h2>
-            <p className="muted mt-2 text-[11px]">
-              {action === "delete"
-                ? "This cannot be undone."
-                : "The photograph will remain in the archive."}
-            </p>
+            <p className="muted mt-2 text-[11px]">This cannot be undone.</p>
             <form onSubmit={submit}>
               <label className="mt-6 block text-[11px]">
                 Admin password
@@ -141,14 +108,11 @@ export function SkyManagement({
                 <button type="button" className="muted" onClick={close}>
                   Cancel
                 </button>
-                <button disabled={busy || !password} className="disabled:opacity-40">
-                  {busy
-                    ? "Working…"
-                    : action === "delete"
-                      ? "Delete permanently"
-                      : hidden
-                        ? "Restore"
-                        : "Hide"}
+                <button
+                  disabled={busy || !password}
+                  className="disabled:opacity-40"
+                >
+                  {busy ? "Working…" : "Delete permanently"}
                 </button>
               </div>
             </form>

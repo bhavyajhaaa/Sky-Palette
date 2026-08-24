@@ -4,6 +4,7 @@ import { ModalProvider } from "@/components/AddSkyModal";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
+import { SkySelectionProvider } from "@/components/SkySelectionProvider";
 
 const title = "Sky Palette";
 const description = "To play with the skies I've seen";
@@ -32,10 +33,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <ModalProvider>
-          <Header />
-          {children}
-        </ModalProvider>
+        <SkySelectionProvider>
+          <ModalProvider>
+            <Header />
+            {children}
+          </ModalProvider>
+        </SkySelectionProvider>
         <SpeedInsights />
         <Analytics />
       </body>

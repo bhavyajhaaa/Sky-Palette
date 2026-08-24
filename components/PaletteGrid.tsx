@@ -2,14 +2,13 @@
 import { sortColors } from "@/lib/images";
 import { useEffect, useState } from "react";
 import { SiteAttribution } from "./SiteAttribution";
+import { useHiddenSkies } from "./SkySelectionProvider";
+import type { SkyColorSource } from "@/types/sky";
 
-export function PaletteGrid({
-  colors,
-  skies,
-}: {
-  colors: string[];
-  skies: number;
-}) {
+export function PaletteGrid({ skies }: { skies: SkyColorSource[] }) {
+  const { hiddenIds } = useHiddenSkies();
+  const visibleSkies = skies.filter((sky) => !hiddenIds.has(sky.id));
+  const colors = visibleSkies.flatMap((sky) => sky.colors);
   const sorted = sortColors(colors),
     [columns, setColumns] = useState(3);
   useEffect(() => {
@@ -20,6 +19,13 @@ export function PaletteGrid({
     return () => removeEventListener("resize", update);
   }, []);
   const rows = Math.ceil(sorted.length / columns);
+  if (!colors.length)
+    return (
+      <main className="relative grid h-[calc(100dvh-4rem)] place-items-center">
+        <p className="muted text-sm">No skies selected.</p>
+        <SiteAttribution className="theme-ui absolute bottom-3 left-4" />
+      </main>
+    );
   return (
     <main className="relative h-[calc(100dvh-4rem)] overflow-hidden">
       <div
@@ -49,7 +55,7 @@ export function PaletteGrid({
         ))}
       </div>
       <div className="theme-ui absolute bottom-3 right-4 z-10 bg-[var(--bg)]/75 px-2 py-1 text-[10px] backdrop-blur-sm">
-        {colors.length} colors from {skies} skies
+        {colors.length} colors from {visibleSkies.length} skies
       </div>
       <SiteAttribution className="theme-ui absolute bottom-3 left-4 z-20 max-w-[55vw] drop-shadow-sm" />
     </main>

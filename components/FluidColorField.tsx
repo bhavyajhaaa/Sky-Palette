@@ -1,6 +1,8 @@
 "use client";
 
 import { sortColors } from "@/lib/images";
+import type { SkyColorSource } from "@/types/sky";
+import { useHiddenSkies } from "./SkySelectionProvider";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SiteAttribution } from "./SiteAttribution";
 
@@ -343,7 +345,22 @@ function buildInitialSkyTexture(source: string[]) {
   };
 }
 
-export function FluidColorField({ colors }: { colors: string[] }) {
+export function FluidColorField({ skies }: { skies: SkyColorSource[] }) {
+  const { hiddenIds } = useHiddenSkies();
+  const colors = useMemo(
+    () => skies.filter((sky) => !hiddenIds.has(sky.id)).flatMap((sky) => sky.colors),
+    [skies, hiddenIds],
+  );
+  if (!colors.length)
+    return (
+      <div className="grid h-[calc(100dvh-4rem)] place-items-center bg-[var(--bg)]">
+        <p className="muted text-sm">No skies selected.</p>
+      </div>
+    );
+  return <FluidRenderer colors={colors} />;
+}
+
+function FluidRenderer({ colors }: { colors: string[] }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     raf = useRef(0),
     wakeRenderer = useRef(() => {}),
@@ -823,7 +840,7 @@ export function FluidColorField({ colors }: { colors: string[] }) {
       gl.deleteVertexArray(vao);
     };
   }, [
-    initial.seed,
+    initial,
     advanced.simResolution,
     advanced.dyeResolution,
     sourceMetrics.chroma,

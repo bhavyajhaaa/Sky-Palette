@@ -15,7 +15,6 @@ export const seedSkies: Sky[] = [
     width: 1536,
     height: 1024,
     created_at: "2026-08-23T18:34:00Z",
-    hidden_from_palette: false,
     colors: [
       "#283B59",
       "#465675",
@@ -37,7 +36,6 @@ export const seedSkies: Sky[] = [
     width: 1024,
     height: 1280,
     created_at: "2026-08-19T12:20:00Z",
-    hidden_from_palette: false,
     colors: [
       "#253A5F",
       "#495A7C",
@@ -59,7 +57,6 @@ export const seedSkies: Sky[] = [
     width: 1200,
     height: 900,
     created_at: "2026-08-12T04:42:00Z",
-    hidden_from_palette: false,
     colors: [
       "#334865",
       "#5A6680",
@@ -81,7 +78,6 @@ export const seedSkies: Sky[] = [
     width: 900,
     height: 1200,
     created_at: "2026-08-03T14:12:00Z",
-    hidden_from_palette: false,
     colors: [
       "#293D5B",
       "#4C5B78",
@@ -103,7 +99,6 @@ export const seedSkies: Sky[] = [
     width: 1400,
     height: 930,
     created_at: "2026-07-26T13:55:00Z",
-    hidden_from_palette: false,
     colors: [
       "#32425F",
       "#53627C",
@@ -143,9 +138,7 @@ const getCachedSkies = unstable_cache(
     if (!db) return seedSkies;
     const { data, error } = await db
       .from("skies")
-      .select(
-        "id,image_path,width,height,colors,created_at,hidden_from_palette",
-      )
+      .select("id,image_path,width,height,colors,created_at")
       .order("created_at", { ascending: false });
     if (error) return seedSkies;
     return (data as Sky[]).map((sky) => withPublicImage(db, sky));
@@ -162,7 +155,6 @@ const getCachedPaletteSkies = unstable_cache(
     const { data, error } = await db
       .from("skies")
       .select("id,colors")
-      .eq("hidden_from_palette", false)
       .order("created_at", { ascending: false });
     if (error)
       return seedSkies.map(({ id, colors }) => ({ id, colors }));
