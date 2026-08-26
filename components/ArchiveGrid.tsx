@@ -28,35 +28,11 @@ export function ArchiveGrid({ skies }: { skies: Sky[] }) {
         {skies.map((s, i) => (
           <article
             key={s.id}
-            className={`group relative ${i % 3 === 1 ? "md:mt-14" : ""}`}
+            className={`group ${i % 3 === 1 ? "md:mt-14" : ""}`}
           >
-            <Link
-              href={`/sky/${s.id}`}
-              style={{ aspectRatio: `${s.width}/${s.height}` }}
-              className="block overflow-hidden"
-            >
-              <img
-                src={s.image_path}
-                alt="Uploaded sky photograph"
-                loading={i > 4 ? "lazy" : "eager"}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.015]"
-                style={{
-                  objectPosition: `${30 + ((i * 13) % 45)}% ${25 + ((i * 17) % 55)}%`,
-                }}
-              />
-            </Link>
-            <div className="flex justify-between mt-2 text-[10px] muted opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-              <span>{s.colors.length} colors</span>
-              <time>
-                {new Date(s.created_at).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </time>
-            </div>
             <button
               type="button"
+              style={{ aspectRatio: `${s.width}/${s.height}` }}
               aria-label={
                 isHidden(s.id)
                   ? "Include this sky in palette and fluid"
@@ -67,17 +43,41 @@ export function ArchiveGrid({ skies }: { skies: Sky[] }) {
                 isHidden(s.id) ? "Include in palette" : "Hide from palette"
               }
               onClick={() => toggleHidden(s.id)}
-              className="absolute bottom-[-9px] left-1/2 grid size-7 -translate-x-1/2 place-items-center rounded-full focus-visible:outline-offset-0"
+              className="block w-full cursor-pointer overflow-hidden text-left"
             >
-              <span
-                aria-hidden="true"
-                className={`size-1.5 rounded-full border border-[var(--muted-foreground)] transition-opacity ${
-                  isHidden(s.id)
-                    ? "bg-[var(--muted-foreground)] opacity-100"
-                    : "bg-transparent opacity-0 group-hover:opacity-35 group-focus-within:opacity-35"
-                }`}
+              <img
+                src={s.image_path}
+                alt="Uploaded sky photograph"
+                loading={i > 4 ? "lazy" : "eager"}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.015]"
+                style={{
+                  objectPosition: `${30 + ((i * 13) % 45)}% ${25 + ((i * 17) % 55)}%`,
+                }}
               />
             </button>
+            <div className="muted mt-2 grid min-h-4 grid-cols-[1fr_auto_1fr] items-center text-[10px]">
+              <Link
+                href={`/sky/${s.id}`}
+                className="justify-self-start opacity-0 transition-opacity hover:text-[var(--ink)] hover:underline group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                {s.colors.length} colors
+              </Link>
+              <span
+                aria-hidden="true"
+                className={`size-1.5 rounded-full border border-[var(--muted-foreground)] ${
+                  isHidden(s.id)
+                    ? "bg-[var(--muted-foreground)]"
+                    : "bg-transparent opacity-60"
+                }`}
+              />
+              <time className="justify-self-end opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                {new Date(s.created_at).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </time>
+            </div>
           </article>
         ))}
       </div>

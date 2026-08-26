@@ -5,6 +5,7 @@ import type { SkyColorSource } from "@/types/sky";
 import { useHiddenSkies } from "./SkySelectionProvider";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SiteAttribution } from "./SiteAttribution";
+import { HandTrackingPrototype } from "./HandTrackingPrototype";
 
 type ArtSettings = {
   flow: number;
@@ -373,7 +374,8 @@ function FluidRenderer({ colors }: { colors: string[] }) {
       last: 0,
     }),
     resetRequested = useRef(false),
-    reducedRef = useRef(false);
+    reducedRef = useRef(false),
+    handPinched = useRef(false);
   const [settings, setSettings] = useState<ArtSettings>(presets.SILK),
     settingsRef = useRef(settings),
     [colorSettings, setColorSettings] = useState<ColorSettings>({
@@ -432,13 +434,19 @@ function FluidRenderer({ colors }: { colors: string[] }) {
   const move = useCallback((clientX: number, clientY: number) => {
     const c = canvas.current,
       s = settingsRef.current;
-    if (!c || s.paused || reducedRef.current) return;
+    if (!c || s.paused || reducedRef.current || handPinched.current) return;
     const r = c.getBoundingClientRect(),
       now = performance.now(),
       x = (clientX - r.left) / r.width,
       y = 1 - (clientY - r.top) / r.height,
-      p = pointer.current,
-      dt = Math.max(12, now - p.last),
+      p = pointer.current;
+    if (!p.last) {
+      p.x = x;
+      p.y = y;
+      p.last = now;
+      return;
+    }
+    const dt = Math.max(12, now - p.last),
       dx = ((x - p.x) * 1000) / dt,
       dy = ((y - p.y) * 1000) / dt;
     p.x = x;
@@ -449,6 +457,44 @@ function FluidRenderer({ colors }: { colors: string[] }) {
     p.moved = Math.hypot(p.dx, p.dy) > 0.008;
     wakeRenderer.current();
   }, []);
+  const moveHand = useCallback(
+    ({ pinching, x, y }: { pinching: boolean; x: number; y: number }) => {
+      const p = pointer.current,
+        now = performance.now(),
+        fluidY = 1 - y;
+      if (!pinching) {
+        if (handPinched.current) {
+          p.moved = false;
+          p.dx = 0;
+          p.dy = 0;
+          p.last = 0;
+        }
+        handPinched.current = false;
+        return;
+      }
+      if (!handPinched.current) {
+        handPinched.current = true;
+        p.x = x;
+        p.y = fluidY;
+        p.dx = 0;
+        p.dy = 0;
+        p.last = now;
+        p.moved = false;
+        return;
+      }
+      const dt = Math.max(12, now - p.last),
+        dx = ((x - p.x) * 1000) / dt,
+        dy = ((fluidY - p.y) * 1000) / dt;
+      p.x = x;
+      p.y = fluidY;
+      p.last = now;
+      p.dx = Math.max(-2, Math.min(2, dx));
+      p.dy = Math.max(-2, Math.min(2, dy));
+      p.moved = Math.hypot(p.dx, p.dy) > 0.008;
+      wakeRenderer.current();
+    },
+    [],
+  );
   useEffect(() => {
     const canvasEl = canvas.current;
     if (!canvasEl) return;
@@ -1052,6 +1098,7 @@ function FluidRenderer({ colors }: { colors: string[] }) {
       )}
       <SiteAttribution className="fluid-attribution theme-ui absolute bottom-4 left-5 z-30 max-w-[calc(100vw-7.5rem)] drop-shadow-sm" />
       <div className="fluid-utility-controls theme-ui absolute bottom-3 right-4 z-30 flex items-center gap-1">
+        <HandTrackingPrototype onHandInput={moveHand} />
         <button
           className="grid size-8 place-items-center bg-transparent"
           aria-label="Reset fluid"
